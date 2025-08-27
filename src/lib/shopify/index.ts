@@ -55,6 +55,7 @@ import type {
   ShopifyProduct,
   ShopifyProductOperation,
   ShopifyProductRecommendationsOperation,
+  
   ShopifyProductsOperation,
   ShopifyRemoveFromCartOperation,
   ShopifyUpdateCartOperation,
@@ -85,6 +86,19 @@ export async function shopifyFetch<T>({
   variables?: ExtractVariables<T>;
 }): Promise<{ status: number; body: T } | never> {
   try {
+    // Check if Shopify is configured
+    if (!domain || !key || domain === "https://" || key === "") {
+      console.warn("Shopify not configured, returning empty data");
+      // Return empty data structure that matches Shopify's expected format
+      return {
+        status: 200,
+        body: {
+          data: {},
+          errors: []
+        } as T
+      };
+    }
+
     // console.log("Headers being sent:", {
     //   "Content-Type": "application/json",
     //   "X-Shopify-Storefront-Access-Token": key,
